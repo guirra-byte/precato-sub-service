@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Sub {
+  id               String   @id @default(uuid())
+  name             String
+  email            String
+  created_at       DateTime @default(now())
+  block            String
+  history          String
+  previous_history String
+  active           Boolean
+  las_message      String?
+
+  MessagesOnSubs MessagesOnSubs[]
+
+  @@map("subs")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  header     String
+  block      String
+  template   String
+  created_at DateTime @default(now())
+  position   DateTime
+
+  MessagesOnSubs MessagesOnSubs[]
+
+  @@map("messages")
+}
+
+model MessagesOnSubs {
+  sub_id String
+  subs   Sub     @relation(fields: [sub_id], references: [id])
+  msg_id String
+  msgs   Message @relation(fields: [msg_id], references: [id])
+
+  @@unique([sub_id, msg_id])
+  @@map("msgsOnSubs")
+}
