@@ -4,6 +4,7 @@
 
 # Environment Variables
 .env
+src/config/mailerModuleConfig.ts
 
 # Logs
 logs

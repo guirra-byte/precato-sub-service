@@ -1,17 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Message } from '@prisma/client';
 import { SubService } from 'src/modules/sub/services/sub.service';
 import { MessageService } from './msg.service';
-import { IDateProvider } from 'src/_shared/infra/providers/date/contract/IDateProvider';
-
-interface IMailProps {
-  [block: string]: {
-    name: string;
-    email: string;
-    messages: Message[];
-    last_message: string;
-  };
-}
+import { IDateProvider } from 'src/_shared/providers/date/contract/IDateProvider';
+import { IMailProvider } from 'src/_shared/providers/mail/contract/IMailProvider';
 
 @Injectable()
 export class FlowService {
@@ -19,33 +10,57 @@ export class FlowService {
     private msgService: MessageService,
     private subService: SubService,
     private dateProvider: IDateProvider,
+    private mailerProvider: IMailProvider,
   ) {}
 
   async execute() {
     const receivers = await this.subService.findAll();
-    const msgs = await this.msgService.msgsOrder();
 
-    const mails: IMailProps[] = [];
+    const msgs = (await this.msgService.msgsOrder()).filter(async (msg) => {
+      const isAfter = await this.dateProvider.compareIsAfter(msg.position);
+      const isNow = await this.dateProvider.dateNow();
 
-    const sameBlock = async () => {
+      if (isAfter || msg.position === isNow) {
+        return msg;
+      }
+    });
+
+    const flow = async () => {
       for (const receiver of receivers) {
-        const msgsInBlock = [];
+        for (let index = 0; index < msgs.length; index++) {
+          const msg = msgs[index];
 
-        for (const msg of msgs) {
-          if (msg.block === receiver.block) {
-            msgsInBlock.push(msg);
+          const nextMsg = msgs.find(
+            async (msgItem, msgIndex) =>
+              msgIndex + 1 ===
+              msgs.indexOf(
+                await this.msgService.findById(receiver.las_message),
+              ) +
+                1,
+          );
+
+          await this.mailerProvider.sendEmail(
+            receiver.email,
+            process.env.MAILER_DEFAULT_SENDER,
+            msg.template,
+            msg.header,
+          );
+
+          if (!nextMsg && receiver.block === 'REMARKETING') {
+            await this.subService.isUnActive(receiver.id);
+
+            await this.subService.updateLastMessage(receiver.id, msg.id);
+          } else if (!nextMsg && receiver.block === 'REMARKETING') {
+            await this.subService.updateStageBlock(receiver.id);
+
+            await this.subService.updateLastMessage(receiver.id, msg.id);
+          } else if (nextMsg) {
+            await this.subService.updateLastMessage(receiver.id, msg.id);
           }
-        }
-
-        if (receiver.block in mails) {
-          mails[receiver.block] = {
-            name: receiver.name,
-            email: receiver.email,
-            last_message: receiver.las_message,
-            messages: msgsInBlock,
-          };
         }
       }
     };
+
+    await flow();
   }
 }
