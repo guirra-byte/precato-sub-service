@@ -4,7 +4,7 @@ import { ICreateSubDTO } from 'src/modules/sub/dtos/ICreateSubDTO';
 import { ValidateEmailPipe } from 'src/_shared/pipes/ValidateSubEmail.pipe';
 import { CreateSubSchema } from '../schema/CreateSubSchema';
 
-Controller('sub');
+@Controller('sub')
 export class SubController {
   constructor(private readonly subService: SubService) {}
 
