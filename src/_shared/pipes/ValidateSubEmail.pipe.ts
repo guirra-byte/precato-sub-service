@@ -15,6 +15,10 @@ export class ValidateEmailPipe implements PipeTransform {
     if (metadata.type === 'body') {
       const { error } = this.schema.validate(validate);
 
+      if (!validate) {
+        throw new BadRequestException('Missing Params!');
+      }
+
       if (error) {
         throw new BadRequestException(error.message);
       }
