@@ -59,6 +59,13 @@ export class SubRepository implements ISubRepository {
     });
   }
 
+  async updateLastMessage(id: string, last_message: string): Promise<void> {
+    await this.ormRepository.sub.update({
+      where: { id },
+      data: { las_message: last_message },
+    });
+  }
+
   async isUnActive(id: string): Promise<void> {
     await this.ormRepository.sub.update({
       where: { id },

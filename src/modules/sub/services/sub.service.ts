@@ -24,10 +24,6 @@ export class SubService {
     return await this.subRepository.findAll();
   }
 
-  async isUnActive(id: string): Promise<void> {
-    await this.subRepository.isUnActive(id);
-  }
-
   async updateStageBlock(id: string): Promise<void> {
     const sub = await this.findById(id);
     const { block, las_message } = sub;
@@ -59,5 +55,13 @@ export class SubService {
 
       await this.subRepository.updateStageBlock(id, nextBlock);
     }
+  }
+
+  async updateLastMessage(id: string, last_message: string): Promise<void> {
+    await this.subRepository.updateLastMessage(id, last_message);
+  }
+
+  async isUnActive(id: string): Promise<void> {
+    await this.subRepository.isUnActive(id);
   }
 }
