@@ -19,7 +19,7 @@ model Sub {
   history          String
   previous_history String
   active           Boolean
-  las_message      String?
+  last_message     String?
 
   MessagesOnSubs MessagesOnSubs[]
 

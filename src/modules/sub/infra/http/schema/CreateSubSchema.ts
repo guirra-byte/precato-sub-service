@@ -1,9 +1,8 @@
-import joi from 'joi';
+import * as Joi from 'joi';
 
-export const CreateSubSchema = joi.object({
-  name: joi.string().required(),
-  email: joi
-    .string()
-    .required()
-    .regex(/[^\s@]+@[^\s@]+\.[^\s@]+/gi),
+const pattern = /[^\s@]+@[^\s@]+\.[^\s@]+/gi;
+
+export const CreateSubSchema = Joi.object({
+  name: Joi.string(),
+  email: Joi.string().pattern(new RegExp(JSON.stringify(pattern))),
 });

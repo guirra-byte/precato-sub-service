@@ -1,9 +1,6 @@
 import { IDateProvider } from '../contract/IDateProvider';
-import utc from 'dayjs/plugin/utc';
 import dayjs from 'dayjs';
 import { Injectable } from '@nestjs/common/decorators';
-
-dayjs.extend(utc);
 
 @Injectable()
 export class DateProvider implements IDateProvider {
@@ -46,10 +43,10 @@ export class DateProvider implements IDateProvider {
   }
 
   async dateNow(): Promise<Date> {
-    return dayjs().utc().local().toDate();
+    return dayjs().toDate();
   }
 
   async replaceToUTC(date: Date): Promise<string> {
-    return dayjs(date).utc().local().format();
+    return dayjs(date).format();
   }
 }

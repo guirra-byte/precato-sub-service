@@ -13,6 +13,8 @@ import { ValidateEmailPipe } from 'src/_shared/pipes/ValidateSubEmail.pipe';
 import { CreateSubSchema } from '../schema/CreateSubSchema';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { ExceptionHandlerLog } from 'src/_shared/filters/exceptions/exceptionHandler.filter';
+import { ValidationFilePipe } from 'src/_shared/pipes/ValidationFile.pipe';
+import { Sub } from '@prisma/client';
 
 @Controller('sub')
 export class SubController {
@@ -28,5 +30,22 @@ export class SubController {
   @Get(':id')
   async findById(@Param('id', ParseUUIDPipe) id: string) {
     return this.subService.findById(id);
+  }
+
+  @Get()
+  async findAll(): Promise<Sub[]> {
+    return this.subService.findAll();
+  }
+
+  @Post(':id')
+  async updateStageBlock(@Param('id', ParseUUIDPipe) id: string) {
+    await this.subService.updateStageBlock(id);
+  }
+
+  @Post('/connect')
+  @UsePipes(new ValidationFilePipe())
+  async readSubQRCode(qrCode: Express.Multer.File): Promise<Sub> {
+    const connect = await this.subService.readSubQRCode(qrCode);
+    return connect;
   }
 }
