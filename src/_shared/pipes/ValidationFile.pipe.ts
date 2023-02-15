@@ -5,6 +5,9 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
+import path from 'path';
+import { QRCodePaths } from 'src/config/resolver/QRCodePaths.resolver';
+import { compressUploadImages } from '../services/compressUploadImages.service';
 
 const supportedFileTypes = ['.png', '.jpg', '.svg'];
 
@@ -28,10 +31,10 @@ export class ValidationFilePipe implements PipeTransform {
     }
 
     const maxFileSizeInKb = 25000;
-    if (value.size > maxFileSizeInKb) {
-      throw new HttpException(
-        `File size is too large! 25mb its the max, but your image have ${value.size}`,
-        HttpStatus['UNPROCESSABLE_ENTITY'],
+    if (value.size >= maxFileSizeInKb * 2) {
+      await compressUploadImages(
+        path.join(QRCodePaths.qrCodeUpload_path),
+        value.buffer,
       );
     }
   }

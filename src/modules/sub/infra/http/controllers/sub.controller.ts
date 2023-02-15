@@ -7,6 +7,7 @@ import {
   Param,
   UsePipes,
   UseFilters,
+  UploadedFile,
 } from '@nestjs/common';
 import { ICreateSubDTO } from 'src/modules/sub/dtos/ICreateSubDTO';
 import { ValidateEmailPipe } from 'src/_shared/pipes/ValidateSubEmail.pipe';
@@ -42,9 +43,14 @@ export class SubController {
     await this.subService.updateStageBlock(id);
   }
 
-  @Post('/connect')
+  @Post('/qrcode/:id')
+  async generateSubQRCode(@Param('id') id: string) {
+    await this.subService.generateSubQRCode(id);
+  }
+
+  @Post('/qrcode/connect')
   @UsePipes(new ValidationFilePipe())
-  async readSubQRCode(qrCode: Express.Multer.File): Promise<Sub> {
+  async readSubQRCode(@UploadedFile() qrCode: Express.Multer.File) {
     const connect = await this.subService.readSubQRCode(qrCode);
     return connect;
   }
