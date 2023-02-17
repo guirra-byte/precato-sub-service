@@ -11,6 +11,7 @@ import fs from 'fs';
 import { QRCodePaths } from 'src/config/resolver/QRCodePaths.resolver';
 import path from 'path';
 import { BadRequestException } from '@nestjs/common';
+import bcrypt from 'bcrypt';
 
 Injectable();
 export class SubService {
@@ -20,11 +21,16 @@ export class SubService {
   ) {}
 
   async create(sub: ICreateSubDTO): Promise<void> {
-    await this.subRepository.create(sub);
+    const encodePassword = await bcrypt.hash(sub.password, 10);
+    await this.subRepository.create({ password: encodePassword, ...sub });
   }
 
   async findById(id: string): Promise<Sub> {
     return await this.subRepository.findById(id);
+  }
+
+  async findByEmail(email: string): Promise<Sub> {
+    return await this.subRepository.findByEmail(email);
   }
 
   async findAll(): Promise<Sub[]> {
@@ -33,12 +39,12 @@ export class SubService {
 
   async updateStageBlock(id: string): Promise<void> {
     const sub = await this.findById(id);
-    const { block, las_message } = sub;
+    const { block, last_message } = sub;
 
     const msgs = await this.msgService.findByBlock(block);
 
     if (
-      las_message === msgs[msgs.length - 1].id &&
+      last_message === msgs[msgs.length - 1].id &&
       block !== blockConfig.block['REMARKETING']
     ) {
       const actualBlock = blockConfig[sub.block];

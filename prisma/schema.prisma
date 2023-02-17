@@ -10,10 +10,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  id       String @id() @default(uuid())
+  name     String
+  email    String
+  password String
+
+  @@map("admins")
+}
+
 model Sub {
   id               String   @id @default(uuid())
   name             String
   email            String
+  password         String
   created_at       DateTime @default(now())
   block            String
   history          String

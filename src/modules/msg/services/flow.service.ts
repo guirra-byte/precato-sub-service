@@ -34,7 +34,7 @@ export class FlowService {
             async (msgItem, msgIndex) =>
               msgIndex + 1 ===
               msgs.indexOf(
-                await this.msgService.findById(receiver.las_message),
+                await this.msgService.findById(receiver.last_message),
               ) +
                 1,
           );

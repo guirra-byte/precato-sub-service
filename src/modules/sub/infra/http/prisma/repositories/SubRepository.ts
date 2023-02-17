@@ -13,6 +13,7 @@ export class SubRepository implements ISubRepository {
         active: true,
         name: sub.name,
         email: sub.email,
+        password: sub.password,
         block: blockConfig.ids['c77762d9-872b-497f-bd72-9e445f80231f'],
         history: 'ENTRY',
         previous_history: '',
@@ -23,6 +24,10 @@ export class SubRepository implements ISubRepository {
   async findById(id: string): Promise<Sub> {
     const sub = await this.ormRepository.sub.findUnique({ where: { id } });
     return sub;
+  }
+
+  async findByEmail(email: string): Promise<Sub> {
+    return await this.ormRepository.sub.findFirst({ where: { email } });
   }
 
   async findActiveSubs(): Promise<Sub[]> {
@@ -62,7 +67,7 @@ export class SubRepository implements ISubRepository {
   async updateLastMessage(id: string, last_message: string): Promise<void> {
     await this.ormRepository.sub.update({
       where: { id },
-      data: { las_message: last_message },
+      data: { last_message },
     });
   }
 

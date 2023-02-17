@@ -5,6 +5,7 @@ export abstract class ISubRepository {
   abstract create(sub: ICreateSubDTO): Promise<void>;
 
   abstract findById(id: string): Promise<Sub>;
+  abstract findByEmail(email: string): Promise<Sub>;
   abstract findActiveSubs(): Promise<Sub[]>;
   abstract findAll(): Promise<Sub[]>;
 

@@ -8,24 +8,38 @@ import {
   UsePipes,
   UseFilters,
   UploadedFile,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ICreateSubDTO } from 'src/modules/sub/dtos/ICreateSubDTO';
 import { ValidateEmailPipe } from 'src/_shared/pipes/ValidateSubEmail.pipe';
 import { CreateSubSchema } from '../schema/CreateSubSchema';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { ExceptionHandlerLog } from 'src/_shared/filters/exceptions/exceptionHandler.filter';
+import { ExceptionHandlerLog } from 'src/_shared/infra/http/filters/exceptions/exceptionHandler.filter';
 import { ValidationFilePipe } from 'src/_shared/pipes/ValidationFile.pipe';
 import { Sub } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from 'src/_shared/services/Auth/auth.service';
+import { AuthRequest } from 'src/_shared/services/Auth/models/AuthRequest';
 
 @Controller('sub')
 export class SubController {
-  constructor(private readonly subService: SubService) {}
+  constructor(
+    private subService: SubService,
+    private authService: AuthService,
+  ) {}
 
   @Post()
   @UseFilters(ExceptionHandlerLog)
   @UsePipes(new ValidateEmailPipe(CreateSubSchema))
   async create(@Body() sub: ICreateSubDTO) {
     await this.subService.create(sub);
+  }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('auth/login')
+  async login(@Request() req: AuthRequest) {
+    return await this.authService.login(req.sub);
   }
 
   @Get(':id')
