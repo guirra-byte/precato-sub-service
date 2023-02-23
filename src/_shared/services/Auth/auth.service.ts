@@ -8,14 +8,14 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private subService: SubService, private jwtService: JwtService) {}
 
-  async validateSub(email: string, password: string): Promise<Sub> {
+  async verify(email: string, password: string): Promise<Sub> {
     const sub = await this.subService.findByEmail(email);
 
     if (!sub) {
       throw new BadRequestException('', 'Email or Password are incorrect!');
     }
 
-    const decodePassword = bcrypt.compare(password, sub.password);
+    const decodePassword = await bcrypt.compare(password, sub.password);
 
     if (!decodePassword) {
       throw new BadRequestException('', 'Email or Password are incorrect');

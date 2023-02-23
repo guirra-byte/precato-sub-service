@@ -13,7 +13,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
             10,
           );
 
-          await this.admins.create({
+          await this.admin.create({
             data: {
               name: 'Athom',
               email: 'athom@ottom.com',

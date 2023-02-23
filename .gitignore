@@ -3,7 +3,7 @@
 /node_modules
 
 # Environment Variables
-.env
+/.env
 src/config/mailerModuleConfig.ts
 
 # Logs

@@ -36,22 +36,6 @@ export class SubController {
     await this.subService.create(sub);
   }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('auth/login')
-  async login(@Request() req: AuthRequest) {
-    return await this.authService.login(req.sub);
-  }
-
-  @Get(':id')
-  async findById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.subService.findById(id);
-  }
-
-  @Get()
-  async findAll(): Promise<Sub[]> {
-    return this.subService.findAll();
-  }
-
   @Post(':id')
   async updateStageBlock(@Param('id', ParseUUIDPipe) id: string) {
     await this.subService.updateStageBlock(id);
@@ -67,5 +51,21 @@ export class SubController {
   async readSubQRCode(@UploadedFile() qrCode: Express.Multer.File) {
     const connect = await this.subService.readSubQRCode(qrCode);
     return connect;
+  }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('auth/login')
+  async login(@Request() req: AuthRequest) {
+    return await this.authService.login(req.sub);
+  }
+
+  @Get(':id')
+  async findById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.subService.findById(id);
+  }
+
+  @Get()
+  async findAll(): Promise<Sub[]> {
+    return this.subService.findAll();
   }
 }
