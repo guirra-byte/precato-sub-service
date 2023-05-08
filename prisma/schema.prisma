@@ -36,13 +36,34 @@ model Sub {
   @@map("subs")
 }
 
+model Form {
+  id        String         @id() @default(uuid())
+  formUrl   String         @unique()
+  qrCode    String         @unique()
+  block     String
+  responses FormResponse[]
+}
+
+model FormResponse {
+  id          String @id() @default(uuid())
+  sub_id      String
+  question_id String
+  answers     String
+
+  Form   Form?   @relation(fields: [formId], references: [id])
+  formId String?
+}
+
 model Message {
   id         String   @id @default(uuid())
   header     String
   block      String
   template   String
+  subject    String
   created_at DateTime @default(now())
   position   DateTime
+  read       Boolean  @default(false)
+  feedback   String?
 
   MessagesOnSubs MessagesOnSubs[]
 

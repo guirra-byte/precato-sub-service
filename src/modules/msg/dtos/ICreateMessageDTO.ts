@@ -3,4 +3,5 @@ export interface ICreateMessageDTO {
   block: string;
   template: string;
   position: Date;
+  subject: string;
 }

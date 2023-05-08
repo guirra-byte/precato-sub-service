@@ -1,11 +1,15 @@
 import { Sub } from '@prisma/client';
-import { ISubRepository } from 'src/modules/sub/contracts/ISubRepository';
-import { ICreateSubDTO } from 'src/modules/sub/dtos/ICreateSubDTO';
-import { PrismaService } from 'src/_shared/infra/prisma/prisma.service';
-import { blockConfig } from 'src/config/blockConfig';
+import { ISubRepository } from '../../../../contracts/ISubRepository';
+import { ICreateSubDTO } from '../../../../dtos/ICreateSubDTO';
+import { PrismaService } from '../../../../../../_shared/infra/prisma/prisma.service';
+import { blockConfig } from '../../../../../../config/blockConfig';
 
 export class SubRepository implements ISubRepository {
-  constructor(private ormRepository: PrismaService) {}
+  private ormRepository: PrismaService;
+
+  constructor() {
+    this.ormRepository = new PrismaService();
+  }
 
   async create(sub: ICreateSubDTO): Promise<void> {
     await this.ormRepository.sub.create({

@@ -6,10 +6,24 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ES2015",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "paths": {
+      "@modules/*": [
+        "modules/*"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@_shared/*": [
+        "_shared/*"
+      ]
+    },
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

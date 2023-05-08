@@ -4,18 +4,16 @@ import { Injectable } from '@nestjs/common/decorators';
 
 @Injectable()
 export class DateProvider implements IDateProvider {
-  async compareIsBefore(date: Date): Promise<boolean> {
+  async compareIsBefore(date: Date, toCompare: Date): Promise<boolean> {
     const dateInUTC = await this.replaceToUTC(await this.dateNow());
-    const dateToCompare = await this.replaceToUTC(date);
 
-    return dayjs(dateInUTC).isBefore(dateToCompare);
+    return dayjs(dateInUTC).isBefore(toCompare);
   }
 
-  async compareIsAfter(target_date: Date): Promise<boolean> {
+  async compareIsAfter(target_date: Date, toCompare: Date): Promise<boolean> {
     const dateInUTC = await this.replaceToUTC(target_date);
-    const dateToCompare = await this.replaceToUTC(await this.dateNow());
 
-    return dayjs(dateInUTC).isAfter(dateToCompare);
+    return dayjs(dateInUTC).isAfter(toCompare);
   }
 
   async compareInDays(start_date: Date, end_date: Date): Promise<number> {

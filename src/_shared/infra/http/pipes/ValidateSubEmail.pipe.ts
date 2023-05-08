@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ObjectSchema } from 'joi';
-import { ICreateSubDTO } from 'src/modules/sub/dtos/ICreateSubDTO';
+import { ICreateSubDTO } from '../../../../modules/sub/dtos/ICreateSubDTO';
 
 @Injectable()
 export class ValidateEmailPipe implements PipeTransform {
@@ -13,7 +13,7 @@ export class ValidateEmailPipe implements PipeTransform {
 
   transform(validate: ICreateSubDTO, metadata: ArgumentMetadata) {
     if (metadata.type === 'body') {
-      const { error } = this.schema.validate(validate);
+      const { error, value } = this.schema.validate(validate);
 
       if (!validate) {
         throw new BadRequestException('Missing Params!');
@@ -23,7 +23,7 @@ export class ValidateEmailPipe implements PipeTransform {
         throw new BadRequestException(error.message);
       }
 
-      return validate;
+      return value as ICreateSubDTO;
     }
   }
 }

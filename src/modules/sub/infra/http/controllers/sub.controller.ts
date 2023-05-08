@@ -1,4 +1,4 @@
-import { SubService } from 'src/modules/sub/services/sub.service';
+import { SubService } from '../../../services/sub.service';
 import {
   Controller,
   Post,
@@ -6,34 +6,32 @@ import {
   Body,
   Param,
   UsePipes,
-  UseFilters,
   UploadedFile,
-  UseGuards,
-  Request,
+  Query,
 } from '@nestjs/common';
-import { ICreateSubDTO } from 'src/modules/sub/dtos/ICreateSubDTO';
-import { ValidateEmailPipe } from 'src/_shared/pipes/ValidateSubEmail.pipe';
+import { ICreateSubDTO } from '../../../dtos/ICreateSubDTO';
+import { ValidateEmailPipe } from '../../../../../_shared/infra/http/pipes/ValidateSubEmail.pipe';
 import { CreateSubSchema } from '../schema/CreateSubSchema';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { ExceptionHandlerLog } from 'src/_shared/infra/http/filters/exceptions/exceptionHandler.filter';
-import { ValidationFilePipe } from 'src/_shared/pipes/ValidationFile.pipe';
+import { ValidationFilePipe } from '../../../../../_shared/infra/http/pipes/ValidationFile.pipe';
 import { Sub } from '@prisma/client';
-import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from 'src/_shared/services/Auth/auth.service';
-import { AuthRequest } from 'src/_shared/services/Auth/models/AuthRequest';
+import { Roles } from '../../../../../_shared/decorators/roles.decorator';
+import { ValidationsSegmentsPipe } from '../../../../../_shared/infra/http/pipes/ValidationSegmentsType.pipe';
+import { segmentTypeSchema } from '../../../../../_shared/schemas/ISegmentsTypeSchema';
+import { IEventEmitterProvider } from '../../../../../_shared/providers/event/contract/IEventEmitterProvider';
 
 @Controller('sub')
 export class SubController {
   constructor(
     private subService: SubService,
-    private authService: AuthService,
+    private eventEmitterProvider: IEventEmitterProvider,
   ) {}
 
   @Post()
-  @UseFilters(ExceptionHandlerLog)
   @UsePipes(new ValidateEmailPipe(CreateSubSchema))
   async create(@Body() sub: ICreateSubDTO) {
     await this.subService.create(sub);
+    await this.eventEmitterProvider.emit(`new.SUB`, sub.email);
   }
 
   @Post(':id')
@@ -53,12 +51,6 @@ export class SubController {
     return connect;
   }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('auth/login')
-  async login(@Request() req: AuthRequest) {
-    return await this.authService.login(req.sub);
-  }
-
   @Get(':id')
   async findById(@Param('id', ParseUUIDPipe) id: string) {
     return this.subService.findById(id);
@@ -67,5 +59,20 @@ export class SubController {
   @Get()
   async findAll(): Promise<Sub[]> {
     return this.subService.findAll();
+  }
+
+  @Roles(
+    'DEVELOPER;QUALITY_ASSURANCE;REQUIREMENT_ANALYST;SOLUTIONS_ARCHITECT;CLOSER;HUNTER',
+  )
+  @Get('/aggrouped')
+  @UsePipes(new ValidationsSegmentsPipe(segmentTypeSchema))
+  async segmentsSubs(
+    @Query('type') type: string,
+    @Query('data') standard: string,
+  ): Promise<void> {
+    await this.eventEmitterProvider.emit(
+      `group.${type.toUpperCase()}`,
+      standard,
+    );
   }
 }

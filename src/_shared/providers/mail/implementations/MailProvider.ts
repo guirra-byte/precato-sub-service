@@ -1,7 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { IMailProvider } from '../contract/IMailProvider';
-import { mailTemplate } from 'src/_shared/templates/emailTemplate';
+import { mailTemplate } from '../../../utils/templates/emailTemplate';
 
 @Injectable()
 export class MailProvider implements IMailProvider {
@@ -13,13 +13,13 @@ export class MailProvider implements IMailProvider {
     subject: string,
     header: string,
   ): Promise<void> {
-    const mail = await mailTemplate(header, subject);
+    const { template } = await mailTemplate(header, subject);
 
     await this.mailerService.sendMail({
       to,
       from,
       subject,
-      html: mail.template,
+      html: template,
     });
   }
 }

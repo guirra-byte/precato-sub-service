@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { SubService } from 'src/modules/sub/services/sub.service';
+import { SubService } from '../../sub/services/sub.service';
 import { MessageService } from './msg.service';
-import { IDateProvider } from 'src/_shared/providers/date/contract/IDateProvider';
-import { IMailProvider } from 'src/_shared/providers/mail/contract/IMailProvider';
+import { IDateProvider } from '../../../_shared/providers/date/contract/IDateProvider';
+import { IMailProvider } from '../../../_shared/providers/mail/contract/IMailProvider';
 
 @Injectable()
 export class FlowService {
@@ -17,8 +17,12 @@ export class FlowService {
     const receivers = await this.subService.findAll();
 
     const msgs = (await this.msgService.msgsOrder()).filter(async (msg) => {
-      const isAfter = await this.dateProvider.compareIsAfter(msg.position);
       const isNow = await this.dateProvider.dateNow();
+
+      const isAfter = await this.dateProvider.compareIsAfter(
+        msg.position,
+        isNow,
+      );
 
       if (isAfter || msg.position === isNow) {
         return msg;
@@ -48,10 +52,6 @@ export class FlowService {
 
           if (!nextMsg && receiver.block === 'REMARKETING') {
             await this.subService.isUnActive(receiver.id);
-
-            await this.subService.updateLastMessage(receiver.id, msg.id);
-          } else if (!nextMsg && receiver.block === 'REMARKETING') {
-            await this.subService.updateStageBlock(receiver.id);
 
             await this.subService.updateLastMessage(receiver.id, msg.id);
           } else if (nextMsg) {
