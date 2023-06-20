@@ -8,7 +8,11 @@ export class RolesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const handler = this.reflector.get<string[]>('roles', context.getHandler());
 
-    if (!handler || handler.length === 0) {
+    if (
+      !handler ||
+      handler.length === 0 ||
+      process.env.NODE_ENV === 'DEVELOPMENT'
+    ) {
       return true;
     }
 
