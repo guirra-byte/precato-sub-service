@@ -1,13 +1,13 @@
 ### Sobre o Desafio☝
-> Servidor que receberá inscrições em um formulário. A partir das regras de negócio definidas, você precisará construir uma API REST que realize a inscrição, caso ela >seja válida, armazenando os dados em um banco de dados relacional.
+Servidor que receberá inscrições em um formulário. A partir das regras de negócio definidas, você precisará construir uma API REST que realize a inscrição, caso ela >seja válida, armazenando os dados em um banco de dados relacional.
 
->Inscrição no fluxo: No sistema de captação de leads inbound temos um formulário de inscrição em um fluxo de mensagens com notícias e informações sobre os precatórios >de nossos credores. Para isso, precisamos de uma API capaz de receber a inscrição pelo formulário e realizar o registro no banco de dados.
+Inscrição no fluxo: No sistema de captação de leads inbound temos um formulário de inscrição em um fluxo de mensagens com notícias e informações sobre os precatórios >de nossos credores. Para isso, precisamos de uma API capaz de receber a inscrição pelo formulário e realizar o registro no banco de dados.
 
->Disparo de mensagens: Também precisamos de um serviço periódico que seja executado uma vez ao dia, sempre no mesmo horário, para atualizar no banco de dados qual a >última mensagem disparada para cada inscrição.
+Disparo de mensagens: Também precisamos de um serviço periódico que seja executado uma vez ao dia, sempre no mesmo horário, para atualizar no banco de dados qual a >última mensagem disparada para cada inscrição.
 
->Observação: O desafio deve ser desenvolvido utilizando Javascript/Typescript. Fica a seu critério qual banco de dados utilizar, desde que faça sentido ao desafio >proposto.
+Observação: O desafio deve ser desenvolvido utilizando Javascript/Typescript. Fica a seu critério qual banco de dados utilizar, desde que faça sentido ao desafio >proposto.
 
->Regras de negócio
+Regras de negócio
 > - [x] 1 - A inscrição só deve ser feita com um email válido.
 
 > - [x] 2 - Não devem ser registradas linhas duplicadas com o mesmo email no banco de dados.
